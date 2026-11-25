@@ -13,9 +13,10 @@ use dioxus_html::{
     HasFileData, HasFocusData, HasFormData, HasKeyboardData, HasMouseData, HasPointerData,
     HasScrollData, HasTouchData, HasTouchPointData, HasWheelData, HtmlEventConverter, ImageData,
     KeyboardData, MediaData, MountedData, MountedError, MountedResult, MouseData,
-    NativeDataTransfer, NativeFileData, PlatformEventData, PointerData, RenderedElementBacking,
-    ResizeData, ScrollBehavior, ScrollData, ScrollLogicalPosition, ScrollToOptions, SelectionData,
-    ToggleData, TouchData, TouchPoint, TransitionData, VisibleData, WheelData,
+    NativeDataTransfer, NativeFileData, PlatformEventData, PointerData, PointerId,
+    RenderedElementBacking, ResizeData, ScrollBehavior, ScrollData, ScrollLogicalPosition,
+    ScrollToOptions, SelectionData, ToggleData, TouchData, TouchPoint, TransitionData, VisibleData,
+    WheelData,
     geometry::{
         ClientPoint, ElementPoint, PagePoint, PixelsRect, PixelsSize, PixelsVector2D, ScreenPoint,
         WheelDelta,
@@ -444,13 +445,13 @@ impl HasPointerData for NativePointerData {
         self.0.is_primary
     }
 
-    fn pointer_id(&self) -> i32 {
-        match self.0.id {
+    fn pointer_id(&self) -> PointerId {
+        PointerId::from_raw(match self.0.id {
             BlitzPointerId::Mouse => 0,
             BlitzPointerId::Pen => 1,
             // Fingers map into 2..=i32::MAX so they never collide with mouse or pen
             BlitzPointerId::Finger(id) => (id % (i32::MAX as u64 - 1)) as i32 + 2,
-        }
+        })
     }
 
     fn pointer_type(&self) -> String {
